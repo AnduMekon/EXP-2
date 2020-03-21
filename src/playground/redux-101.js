@@ -1,15 +1,43 @@
 import { createStore } from 'redux';
 
+// Action generators - functions that return action objects
 
-const store = createStore((state = { count: 0 }, action) => {
+const incrementCount = ({ incrementBy = 1 } = {}) => ({
+  type: 'INCREMENT',
+  incrementBy
+});
+
+const decrementCount = ({ decrementBy = 1 } = {}) => ({
+  type: 'DECREMENT',
+  decrementBy
+});
+
+const setCount = ({ count }) => ({
+  type: 'SET',
+  count
+});
+
+const resetCount = () => ({
+  type: 'RESET'
+});
+
+// Reducers
+// 1. Reducers are pure functions
+// 2. Never change state or actiton
+
+const countReducer = (state = { count: 0 }, action) => {
   switch (action.type) {
     case 'INCREMENT':
       return {
-        count: state.count + 10
+        count: state.count + action.incrementBy
       };
     case 'DECREMENT':
       return {
-        count: state.count - 1
+        count: state.count - action.decrementBy
+      };
+    case 'SET':
+      return {
+        count: action.count
       };
     case 'RESET':
       return {
@@ -18,44 +46,22 @@ const store = createStore((state = { count: 0 }, action) => {
     default:
       return state;
   }
-});
-store.subscribe(()=> {
-   console.log(store.getState()); 
-})
+};
 
+const store = createStore(countReducer);
 
-// Actions - than an object that gets sent to the store
-
-// I'd like to increment the count
-store.dispatch({
-  type: 'INCREMENT'
+const unsubscribe = store.subscribe(() => {
+  console.log(store.getState());
 });
 
-store.dispatch({
-  type: 'INCREMENT'
-});
+store.dispatch(incrementCount({ incrementBy: 5 }))
 
-store.dispatch({
-  type: 'RESET'
-});
+store.dispatch(incrementCount());
 
+store.dispatch(resetCount());
 
+store.dispatch(decrementCount());
 
-  store.dispatch({
-    type: 'INCREMENT'
-  });
-  store.dispatch({
-    type: 'RESET'
-  });
+store.dispatch(decrementCount({ decrementBy: 10 }));
 
-
-
-
-
-
-
-
-
-// action type name alwasys has to be capital letter.
-    //the type object has to be inside the dispatch in order to put
-
+store.dispatch(setCount({ count: -100 }));
